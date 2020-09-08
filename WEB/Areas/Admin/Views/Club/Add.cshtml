@@ -1,0 +1,73 @@
+﻿@model  WebModels.Club
+@using WebModels
+@using WEB.Models
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutEmpty.cshtml";
+}
+@using (Html.BeginForm("Add", "Club", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+{
+
+    <div class="control-group">
+        @Html.LabelFor(m => m.ClubName, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.ClubName, new { @class = "input-block-level" })
+            @Html.ValidationMessageFor(m => m.ClubName)
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.Type, new { @class = "control-label" })
+        <div class="controls">
+            @Html.DropDownListFor(
+            m => m.Type,
+            new SelectList(new List<SelectListTemp>
+                {
+                new SelectListTemp { Text="Tennis", Value = (int)TypeClub.Tennis },
+                new SelectListTemp { Text="Badminton", Value = (int)TypeClub.Badminton }
+                }, "Value", "Text")
+            )
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.Amount, new { @class = "control-label" })
+        <div class="controls">
+            @(Html.Kendo().NumericTextBoxFor<decimal>(m => m.Amount)
+                                        .Value(0)
+                                    .Min(0)
+                                    )
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.QRCode, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.QRCode, new { @class = "input-block-level" })
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.ShareLink, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.ShareLink, new { @class = "input-block-level" })
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.FacebookRef, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.FacebookRef, new { @class = "input-block-level" })
+        </div>
+    </div>
+    <div class="validation-group">
+        <div class="controls">
+            @Html.ValidationSummary(true)
+        </div>
+    </div>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">@Resources.Common.SaveChanges</button>
+    </div>
+    @Html.AntiForgeryToken()
+}
+<script src="/Content/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+    function create_success() {
+        top.$("#window").data("kendoWindow").close();
+        top.$("#grid").data("kendoGrid").dataSource.read();
+    }
+</script>

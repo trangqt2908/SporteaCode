@@ -1,0 +1,193 @@
+﻿@model WebModels.RegisterModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@using (Html.BeginForm("Add", "User", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal fix" }))
+{
+    <div class="validation-group">
+        <div class="controls">
+            @Html.ValidationSummary(true)
+        </div>
+    </div>
+
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip")
+        .Items(tabstrip =>
+        {
+        tabstrip.Add().Text("Thông tin tài khoản")
+                .Selected(true)
+                .Content(@<text>
+
+    <br />
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserName, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.UserName, new { @class = "input-block-level" })
+            @Html.ValidationMessageFor(m => m.UserName)
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+        <div class="controls">
+            @Html.PasswordFor(m => m.Password, new { @class = "input-block-level" })
+            @Html.ValidationMessageFor(m => m.Password)
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "control-label" })
+        <div class="controls">
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "input-block-level" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword)
+
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.Label(WebModels.AccountResources.Role, new { @class = "control-label" })
+        <div class="controls">
+            <div style="width:99%;">
+                @(Html.Kendo().MultiSelect()
+                          .Name("roles")
+                          .DataTextField("RoleName")
+                          .DataValueField("RoleName")
+                          .Placeholder("...")
+                          .DataSource(source => {
+                              source.Read(read =>
+                              {
+                                  read.Action("GetRoles", "Role");
+                              })
+                              .ServerFiltering(false);
+                          })
+            )
+            </div>
+        </div>
+    </div>
+     </text>);
+
+        tabstrip.Add().Text("Thông tin cá nhân")
+                .Content(@<text>
+     <br />
+    <div class="control-group">
+        <label class="control-label">Club </label>
+        <div class="controls">
+            <div style="width:99%;">
+                @(Html.Kendo().DropDownList()
+                          .Name("ClubId")
+                          .DataTextField("ClubName")
+                          .DataValueField("ID")
+                          .OptionLabel("------Chọn CLB-------")
+                          .DataSource(source => {
+                              source.Read(read =>
+                              {
+                                  read.Action("GetClubs", "Club");
+                              })
+                              .ServerFiltering(false);
+                          })
+            )
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserProfile.SportType, new { @class = "control-label" })
+        <div class="controls">
+            @Html.DropDownListFor(
+                         m => m.UserProfile.SportType,
+                         new SelectList(new List<SelectListItem>
+                    {
+                new SelectListItem { Text="Tennis", Value = TypeClub.Tennis.ToString() },
+                new SelectListItem { Text="Badminton", Value = TypeClub.Badminton.ToString() }
+                    }, "Value", "Text")
+                         )
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserProfile.FullName, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.UserProfile.FullName, new { @class = "input-block-level" })
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserProfile.Email, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.UserProfile.Email, new { @class = "input-block-level" })
+            @Html.ValidationMessageFor(m => m.UserProfile.Email)
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserProfile.Mobile, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.UserProfile.Mobile, new { @class = "input-block-level" })
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserProfile.Birthday, new { @class = "control-label" })
+        <div class="controls">
+           @(Html.Kendo().DatePickerFor(m=>m.UserProfile.Birthday)
+              .Value(Model.UserProfile.Birthday)
+              .HtmlAttributes(new { type = "text" })
+              .Format("dd/MM/yyyy")
+        )
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserProfile.Gender, new { @class = "control-label" })
+        <div class="controls">
+            @Html.DropDownListFor(
+                         m => m.UserProfile.Gender,
+                         new SelectList(new List<SelectListTemp>
+                    {
+                new SelectListTemp { Text="Male", Value = (int)Gender.Male },
+                new SelectListTemp { Text="Female", Value = (int)Gender.Female },
+                new SelectListTemp { Text="Other", Value = (int)Gender.Other }
+                    }, "Value", "Text")
+                         )
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserProfile.AccountType, new { @class = "control-label" })
+        <div class="controls">
+            @Html.DropDownListFor(
+                         m => m.UserProfile.AccountType,
+                         new SelectList(new List<SelectListItem>
+                    {
+                new SelectListItem { Text="Facebook", Value = AccountType.Facebook.ToString() },
+                new SelectListItem { Text="Google", Value = AccountType.Google.ToString()  },
+                new SelectListItem { Text="Zalo", Value = AccountType.Zalo.ToString()  }
+                    }, "Value", "Text")
+                         )
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label"> Trạng thái </label>
+        <div class="controls">
+            @Html.DropDownListFor(
+                         m => m.UserProfile.IsActive,
+                         new SelectList(new List<SelectListTemp>
+                    {
+                new SelectListTemp { Text="Public", Value = (int)Status.Public },
+                new SelectListTemp { Text="Private", Value = (int)Status.Private }
+
+                    }, "Value", "Text")
+                         )
+        </div>
+    </div>
+
+    <div class="control-group">
+        @Html.LabelFor(m => m.UserProfile.Avatar, new { @class = "control-label" })
+        <div class="controls">
+            <div class="fileupload fileupload-new" data-provides="fileupload">
+                <div class="fileupload-new thumbnail" style="width: 120px; height: 100px;">
+                    <img src="@ApplicationService.NoImage" />
+                    @Html.HiddenFor(m => m.UserProfile.Avatar)
+                </div>
+                <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 100px; line-height: 20px;"></div>
+                <div>
+                    <span class="btn btn-file"><span class="fileupload-new">Tải ảnh</span><span class="fileupload-exists">Tải ảnh</span><input type="file" name='image' /></span>
+                    <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Hủy</a>
+                </div>
+            </div>
+        </div>
+    </div>
+       </text>);
+            })
+    )

@@ -1,0 +1,136 @@
+﻿@model WebModels.WebContact
+
+@{
+    var webmodule = ViewBag.WebModule;
+}
+<script>
+    function OnFailure() {
+        alert("Fail");
+    }
+</script>
+
+
+<div class="row margin-top-30">
+    <div class="col-md-8">
+        @Html.Raw(HttpUtility.HtmlDecode(webmodule.Body))
+        <div class="form-ykien">
+            <div class="title-box margin-top-20">
+                Đăng ký
+            </div>
+            @using (Html.BeginForm("_PubThuMoiNghienCuu", "Contact", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmThuMoiNghienCuu" }))
+            {
+                <input type="hidden" name="Title" value="THƯ MỜI VIẾT BÀI TẠP CHÍ SỐ ĐỊNH KỲ" />
+
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="input-field">
+                            @Html.TextBoxFor(m => m.FullName, new { @placeholder = "Họ và tên", @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.FullName)
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-field">
+                            @Html.TextBoxFor(m => m.Email, new { @placeholder = "Email", @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email)
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="input-field">
+                            @Html.TextAreaFor(m => m.Body, new { @placeholder = "Ghi chú", @class = "form-control", @rows = "5" })
+                            @Html.ValidationMessageFor(m => m.Body)
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        @*<div class="input-field">
+                            <input type="file" placeholder="Tệp đính kèm(doc, docx)" name="files" class="form-control" accept=".doc,.docx" />
+                        </div>*@
+
+                        <div>
+                            <input placeholder="Chọn tệp đính kèm..." id="filename"  class="form-control" readonly/>
+                            <label class="file">
+                                <input type="file" id="fileInput" name="files" aria-label="Tệp đính kèm(doc, docx)" accept=".doc,.docx">
+                                <span class="file-custom"></span>
+                            </label>
+                        </div>
+                        <br />
+                       
+                        <div class="progress progress-striped">
+                            <div class="progress-bar progress-bar-success">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 text-center" style="margin-top: 20px">
+                        <button type="submit" class="btn btn-primary color-green">Đăng ký</button>
+                        <button type="button" onclick="ResetForm('frmLienHe')" class="btn btn-danger">Hủy</button>
+                    </div>
+                </div>
+
+                @Html.AntiForgeryToken()
+            }
+        </div>
+
+    </div>
+    <div class="col-md-4">
+
+        @Html.Action("_BoxDocNhieu", "Article", new { area = "ContentType" })
+
+        @Html.Action("_Adv", "Advertisement", new { area = "", position = "_adv_chi_tiet" })
+    </div>
+</div>
+<link href="~/Content/themes/web/bootstrap/css/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+<script src="http://malsup.github.com/jquery.form.js"></script>
+<script>
+    (function () {
+        document.getElementById('fileInput').onchange = function () {           
+            if (this.value) {
+                var fullPath = this.value;
+
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+
+                $("#filename").val(filename);
+
+            }
+        };
+
+        var bar = $('.progress-bar');
+        var percent = $('.progress-bar');
+        var status = $('#status');
+
+        $('form').ajaxForm({
+            beforeSend: function () {
+                status.empty();
+                var percentVal = '0%';
+                bar.width(percentVal)
+                percent.html(percentVal);
+            },
+            uploadProgress: function (event, position, total, percentComplete) {
+                var percentVal = percentComplete + '%';
+                bar.width(percentVal)
+                percent.html(percentVal);
+            },
+            success: function () {
+                var percentVal = '100%';
+                bar.width(percentVal)
+                percent.html(percentVal);
+            },
+            complete: function (xhr) {
+                status.html(xhr.responseText);
+                alert('Cảm ơn bạn đã đăng ký!');
+                $('#frmThuMoiNghienCuu')[0].reset();
+
+                var percentVal = '0%';
+                bar.width(percentVal)
+                percent.html(percentVal);
+            }
+        });
+
+    })();
+</script>
