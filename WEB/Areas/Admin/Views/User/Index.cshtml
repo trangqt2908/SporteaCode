@@ -97,6 +97,7 @@
                                 columns.Bound(p => p.FullName).Title(WebModels.AccountResources.FulllName);
                                 columns.Bound(p => p.Email).Title(WebModels.AccountResources.Email);
                                 columns.Bound(p => p.Mobile).Title("Mobile");
+                                columns.Bound(p => p.AccountType).Title("Account Type");
                                 columns.Command(command =>
                                 {
                                     //command.Custom("Module").Click("modules_handler");
@@ -109,12 +110,13 @@
                             .Pageable()
                             .Selectable(select => select.Mode(GridSelectionMode.Multiple))
                             .Sortable()
-                            .Filterable()
+                            //.Filterable()
                             .DataSource(dataSource => dataSource
                                 .Ajax()
                                 .Model(model => model.Id(p => p.UserId))
                                 .PageSize(30)
                                 .Read(read => read.Action("Users_Read", "User"))
+                                .Group(x => x.Add("AccountType", typeof(string)))
                              )
                               .Events(events => events.Change("change_handler").DataBinding("binding_handler"))
                         )

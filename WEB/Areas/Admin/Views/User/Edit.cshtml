@@ -1,8 +1,13 @@
 ﻿@model WebModels.UserProfile
 @{
     Layout = "~/Areas/Admin/Views/Shared/_LayoutEmpty.cshtml";
-    string url = "";
+    string userTemp = "user" + Model.UserId;
 }
+    <style>
+        .readonly {
+            background-color: #eee !important;
+        }
+    </style>
 
 @using (Html.BeginForm("Edit", "User", new { cUserName = ViewBag.cUserName, UserId = Model.UserId },
     FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal fix" }))
@@ -16,13 +21,43 @@
                 .Content(@<text>
 
     <br />
+
     <div class="control-group">
-        @Html.LabelFor(m => m.UserName, new { @class = "control-label" })
+        @Html.LabelFor(m => m.AccountType, new { @class = "control-label" })
         <div class="controls">
-            @Html.TextBoxFor(m => m.UserName, new { @class = "input-block-level", @readonly = "readonly" })
-            @Html.ValidationMessageFor(m => m.UserName)
+            @Html.DropDownListFor(m => m.AccountType,
+                                      new SelectList(new List<SelectListItem>
+                                      {
+                                        new SelectListItem { Text="Admin", Value = AccountType.Admin.ToString() },
+                                        new SelectListItem { Text="Facebook", Value = AccountType.Facebook.ToString() },
+                                        new SelectListItem { Text="Google", Value = AccountType.Google.ToString()  },
+                                        new SelectListItem { Text="Zalo", Value = AccountType.Zalo.ToString()  },
+                                        new SelectListItem { Text="Other", Value = AccountType.Other.ToString()  }
+                                      }, "Value", "Text"))
         </div>
     </div>
+
+    @if (Model.AccountType == "Admin") {
+        <div class="control-group">
+            @Html.LabelFor(m => m.UserName, new { @class = "control-label" })
+            <div class="controls">
+                @Html.TextBoxFor(m => m.UserName, new { @class = "input-block-level readonly", @readonly = "readonly" })
+                @Html.ValidationMessageFor(m => m.UserName)
+            </div>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" name="UserName" value="@userTemp" />
+        <div class="control-group">
+            @Html.LabelFor(m => m.UserName, new { @class = "control-label" })
+            <div class="controls">
+               @Html.TextBoxFor(m => m.SocialNetworkId, new { @class = "input-block-level readonly", @readonly = "readonly" })
+            </div>
+        </div>
+
+    }
+
      <div class="control-group">
         @Html.Label(WebModels.AccountResources.Role, new { @class = "control-label" })
         <div class="controls">
@@ -76,8 +111,8 @@
                                       m => m.SportType,
                                       new SelectList(new List<SelectListItem>
                         {
-                new SelectListItem { Text="Tennis", Value = TypeClub.Tennis.ToString() },
-                new SelectListItem { Text="Badminton", Value = TypeClub.Badminton.ToString() }
+                new SelectListItem { Text="Tennis", Value = SportType.Tennis.ToString() },
+                new SelectListItem { Text="Badminton", Value = SportType.Badminton.ToString() }
                         }, "Value", "Text")
                                       )
         </div>
@@ -125,20 +160,7 @@
                                       )
         </div>
     </div>
-    <div class="control-group">
-        @Html.LabelFor(m => m.AccountType, new { @class = "control-label" })
-        <div class="controls">
-            @Html.DropDownListFor(
-                                      m => m.AccountType,
-                                      new SelectList(new List<SelectListItem>
-                        {
-                new SelectListItem { Text="Facebook", Value = AccountType.Facebook.ToString() },
-                new SelectListItem { Text="Google", Value = AccountType.Google.ToString()  },
-                new SelectListItem { Text="Zalo", Value = AccountType.Zalo.ToString()  }
-                        }, "Value", "Text")
-                                      )
-        </div>
-    </div>
+
     <div class="control-group">
         <label class="control-label"> Trạng thái </label>
         <div class="controls">

@@ -20,8 +20,8 @@
             m => m.Type,
             new SelectList(new List<SelectListTemp>
                 {
-                new SelectListTemp { Text="Tennis", Value = (int)TypeClub.Tennis },
-                new SelectListTemp { Text="Badminton", Value = (int)TypeClub.Badminton }
+                new SelectListTemp { Text="Tennis", Value = (int)SportType.Tennis },
+                new SelectListTemp { Text="Badminton", Value = (int)SportType.Badminton }
                 }, "Value", "Text")
             )
         </div>
@@ -32,7 +32,7 @@
             @*@Model.Amount*@
             @*<input name="Amount" type="number" value="@Model.Amount" />*@
 
-            @(Html.Kendo().NumericTextBoxFor<decimal>(m => m.Amount)
+            @(Html.Kendo().NumericTextBoxFor<double>(m => m.Amount)
                  .Min(0)
                  .Value(Model.Amount)
         )

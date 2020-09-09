@@ -41,7 +41,7 @@ namespace WEB.Models
             {
                 try
                 {
-                    return "Tạp chí môi trường";
+                    return "Sportea";
                 }
                 catch (Exception)
                 {

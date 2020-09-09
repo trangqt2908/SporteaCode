@@ -1,0 +1,109 @@
+﻿@model  WebModels.Match
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutEmpty.cshtml";
+}
+<style>
+    .k-widget {
+        width: 100%;
+    }
+</style>
+@using (Html.BeginForm("Add", "Match", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+{
+    <div class="control-group">
+        @Html.LabelFor(m => m.Date, new { @class = "control-label" })
+        <div class="controls">
+            @(Html.Kendo().DatePickerFor(m => m.Date)
+                           .Value(Model.Date)
+                           .HtmlAttributes(new { type = "text" })
+                           .Format("dd/MM/yyyy")
+        )
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.Point, new { @class = "control-label" })
+        <div class="controls">
+            @(Html.Kendo().NumericTextBoxFor<int>(m => m.Point)
+                                        .Value(0)
+                                    .Min(0)
+                                    )
+        </div>
+    </div>
+
+    <table style="width:100%; border-top: 1px dotted #615d5d;">
+        <tr>
+            <td style="width:50%; padding-top: 15px; padding-right: 25px; border-right: 1px dotted #615d5d;">
+
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Player1, new { @class = "control-label" })
+                    @(Html.Kendo().DropDownListFor(m => m.Player1)
+          .HtmlAttributes(new { @width = "100%" })
+                              .DataTextField("FullName")
+                              .DataValueField("UserId")
+                              .DataSource(source =>
+                              {
+                                  source.Read(read =>
+                                  {
+                                      read.Action("GetPlayer", "User");
+                                  });
+                              })
+             )
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                        Score
+                    </label>
+                    @(Html.Kendo().NumericTextBoxFor<int>(m => m.Player1Score)
+                                        .Value(0)
+                                    .Min(0)
+                                    .Format("n2")
+                                    )
+                </div>
+
+            </td>
+            <td style="width:50%; padding-left: 25px; padding-top: 15px;">
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Player2, new { @class = "control-label" })
+
+                    @(Html.Kendo().DropDownListFor(m => m.Player2)
+                                .HtmlAttributes(new { @width= "100%" })
+                              .DataTextField("FullName")
+                              .DataValueField("UserId")
+                              .DataSource(source =>
+                              {
+                                  source.Read(read =>
+                                  {
+                                      read.Action("GetPlayer", "User");
+                                  });
+                              })
+             )
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                        Score
+                    </label>
+                    @(Html.Kendo().NumericTextBoxFor<int>(m => m.Player2Score)
+                                        .Value(0)
+                                    .Format("n2")
+                                    .Min(0)
+                                    )
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="validation-group">
+        <div class="controls">
+            @Html.ValidationSummary(true)
+        </div>
+    </div>
+    <div class="text-center" style="margin-top: 60px;">
+        <button class="btn btn-primary" type="submit">@Resources.Common.SaveChanges</button>
+    </div>
+    @Html.AntiForgeryToken()
+}
+<script src="/Content/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+    function create_success() {
+        top.$("#window").data("kendoWindow").close();
+        top.$("#grid").data("kendoGrid").dataSource.read();
+    }
+</script>

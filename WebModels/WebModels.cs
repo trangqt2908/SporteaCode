@@ -289,7 +289,7 @@ namespace WebModels
     {
         public string ClubName { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public decimal? Amount { get; set; }
+        public double? Amount { get; set; }
         public int? Type { get; set; }
         public string QRCode { get; set; }
         public string ShareLink { get; set; }
@@ -342,6 +342,7 @@ namespace WebModels
     [Table("Match")]
     public class Match : BaseEntity
     {
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? Date { get; set; }
         public int? Point { get; set; }
         public string Image { get; set; }

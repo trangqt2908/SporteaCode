@@ -122,9 +122,9 @@ namespace WebModels
         WebSimpleContent
     }
     public enum Status { Private = -1, Internal = 0, Public = 1 }
-    public enum TypeClub { Tennis = 1, Badminton = 2 }
+    public enum SportType { Tennis = 1, Badminton = 2 }
     public enum Gender { Male = 1, Female = 2 , Other = 3}
-    public enum AccountType { Facebook = 1, Google = 2 , Zalo = 3}
+    public enum AccountType { Admin = 1, Facebook = 2, Google = 3 , Zalo = 4, Other = 4 }
 
     public enum StatusUser { TaoMoi = -2, GuiDi = -3, TraLai = -4 }
 

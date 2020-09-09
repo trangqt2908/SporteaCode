@@ -255,6 +255,7 @@
     <Compile Include="Areas\Admin\Controllers\AccountController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminSiteController.cs" />
     <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
+    <Compile Include="Areas\Admin\Controllers\MatchController.cs" />
     <Compile Include="Areas\Admin\Controllers\ContentTypeController.cs" />
     <Compile Include="Areas\Admin\Controllers\ClubController.cs" />
     <Compile Include="Areas\Admin\Controllers\CountryController.cs" />
@@ -2713,6 +2714,11 @@
     <Content Include="Areas\Admin\Views\Club\Deletes.cshtml" />
     <Content Include="Areas\Admin\Views\Club\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Club\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Match\Add.cshtml" />
+    <Content Include="Areas\Admin\Views\Match\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Match\Deletes.cshtml" />
+    <Content Include="Areas\Admin\Views\Match\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Match\Index.cshtml" />
     <None Include="Properties\PublishProfiles\ConVietLinh.pubxml" />
     <None Include="Properties\PublishProfiles\FLAT.pubxml" />
     <Content Include="Images\apple-touch-icon-precomposed.png" />

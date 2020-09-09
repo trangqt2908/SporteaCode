@@ -18,7 +18,7 @@ using WebMatrix.WebData;
 using System.Web.Security;
 using System.Data;
 using System.Transactions;
-
+using System.Data.Entity.Validation;
 
 namespace WEB.Areas.Admin.Controllers
 {
@@ -38,9 +38,23 @@ namespace WEB.Areas.Admin.Controllers
 
         public ActionResult Users_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var users = from x in db.UserProfiles.AsNoTracking() select new { x.UserId, x.UserName, x.Avatar, x.Email, x.Mobile, x.FullName };
+            var users = from x in db.UserProfiles.AsNoTracking()
+                        select new { x.UserId, x.UserName, x.AccountType,
+                x.Email, x.Mobile, x.FullName };
             return Json(users.ToDataSourceResult(request));
         }
+
+        public JsonResult GetPlayer()
+        {
+            var users = db.UserProfiles.Where(x => x.IsActive == (int)Status.Public
+            && x.AccountType != "Admin").Select(x => new PlayerDto
+            {
+                UserId = x.UserId,
+                FullName = x.FullName + " (" + x.SportType + ")"
+            }).ToList();
+            return Json(users, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult Add()
         {
             return View();
@@ -146,89 +160,108 @@ namespace WEB.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                ViewBag.Roles = roles;
-
-                var temp = (from p in db.Set<UserProfile>().AsNoTracking()
-                            where p.UserName.Equals(model.UserName, StringComparison.OrdinalIgnoreCase)
-                            && !p.UserName.Equals(cUserName, StringComparison.OrdinalIgnoreCase)
-                            select p).FirstOrDefault();
-
-                if (temp != null)
+                try
                 {
-                    ModelState.AddModelError("", AccountResources.UserNameExists);
-                    return View(model);
-                }
-                else
-                {
-                    var delavatar = false;
-                    if (image != null)
+                    ViewBag.Roles = roles;
+
+                    var temp = (from p in db.Set<UserProfile>().AsNoTracking()
+                                where p.UserName.Equals(model.UserName, StringComparison.OrdinalIgnoreCase)
+                                && !p.UserName.Equals(cUserName, StringComparison.OrdinalIgnoreCase)
+                                select p).FirstOrDefault();
+
+                    if (temp != null)
                     {
-                        var name = image.FileName;
-                        string extension = Path.GetExtension(name);
-                        var newName = model.UserName + extension;
-                        var dir = new System.IO.DirectoryInfo(Server.MapPath("/content/uploads/avatars/"));
-                        if (!dir.Exists) dir.Create();
-                        var uri = "/content/uploads/avatars/" + newName;
-                        image.SaveAs(HttpContext.Server.MapPath(uri));
-                        try
-                        {
-                            if (ImageTools.ValidateImage(System.Web.HttpContext.Current.Server.MapPath(uri)))
-                            {
-                                var result = ImageTools.ResizeImage(Server.MapPath(uri), Server.MapPath(uri), 240, 240, true, 80);
-                                model.Avatar = uri;
-                            }
-                            else
-                            {
-                                Utility.DeleteFile(uri);
-                                model.Avatar = null;
-                            }
-                        }
-                        catch (Exception)
-                        { }
+                        ModelState.AddModelError("", AccountResources.UserNameExists);
+                        return View(model);
                     }
                     else
                     {
-                        if (model.Avatar == null)
+                        var delavatar = false;
+                        if (image != null)
                         {
-                            delavatar = true;
+                            var name = image.FileName;
+                            string extension = Path.GetExtension(name);
+                            var newName = model.UserName + extension;
+                            var dir = new System.IO.DirectoryInfo(Server.MapPath("/content/uploads/avatars/"));
+                            if (!dir.Exists) dir.Create();
+                            var uri = "/content/uploads/avatars/" + newName;
+                            image.SaveAs(HttpContext.Server.MapPath(uri));
+                            try
+                            {
+                                if (ImageTools.ValidateImage(System.Web.HttpContext.Current.Server.MapPath(uri)))
+                                {
+                                    var result = ImageTools.ResizeImage(Server.MapPath(uri), Server.MapPath(uri), 240, 240, true, 80);
+                                    model.Avatar = uri;
+                                }
+                                else
+                                {
+                                    Utility.DeleteFile(uri);
+                                    model.Avatar = null;
+                                }
+                            }
+                            catch (Exception)
+                            { }
+                        }
+                        else
+                        {
+                            if (model.Avatar == null)
+                            {
+                                delavatar = true;
+                            }
+                        }
+
+                        var modelEdit = db.UserProfiles.Find(model.UserId);
+                        modelEdit.ClubId = model.ClubId;
+                        modelEdit.SocialNetworkId = model.SocialNetworkId;
+                        modelEdit.Email = model.Email;
+                        if (!delavatar)
+                        {
+                            modelEdit.Avatar = model.Avatar;
+                        }
+                        modelEdit.FullName = model.FullName;
+                        modelEdit.Birthday = model.Birthday;
+                        modelEdit.AccountType = model.AccountType;
+                        modelEdit.IsActive = model.IsActive;
+                        modelEdit.Point = model.Point;
+                        modelEdit.WinMatch = model.WinMatch;
+                        modelEdit.ModifiedAt = DateTime.Now;
+                        modelEdit.ModifiedBy = WebSecurity.CurrentUserId;
+                        modelEdit.Mobile = model.Mobile;
+                        modelEdit.SportType = model.SportType;
+                        modelEdit.Gender = model.Gender;
+                        modelEdit.UserName = model.UserName;
+
+                        db.SaveChanges();
+                    }
+                }
+                catch (DbEntityValidationException e)
+                {
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                ve.PropertyName, ve.ErrorMessage);
                         }
                     }
-
-                    var modelEdit = db.UserProfiles.Find(model.UserId);
-                    modelEdit.ClubId = model.ClubId;
-                    modelEdit.SocialNetworkId = model.SocialNetworkId;
-                    modelEdit.Email = model.Email;
-                    if (!delavatar)
-                    {
-                        modelEdit.Avatar = model.Avatar;
-                    }
-                    modelEdit.FullName = model.FullName;
-                    modelEdit.Birthday = model.Birthday;
-                    modelEdit.AccountType = model.AccountType;
-                    modelEdit.IsActive = model.IsActive;
-                    modelEdit.Point = model.Point;
-                    modelEdit.WinMatch = model.WinMatch;
-                    modelEdit.ModifiedAt = DateTime.Now;
-                    modelEdit.ModifiedBy = WebSecurity.CurrentUserId;
-                    modelEdit.Mobile = model.Mobile;
-                    modelEdit.SportType = model.SportType;
-                    modelEdit.Gender = model.Gender;
-
-                    db.SaveChanges();
-                    try
-                    {
-                        foreach (var role in Roles.GetRolesForUser(model.UserName))
-                        {
-                            Roles.RemoveUserFromRole(model.UserName, role);
-                        }
-                        Roles.AddUserToRoles(model.UserName, roles);
-                    }
-                    catch (Exception)
-                    { }
-                    ViewBag.StartupScript = "create_success();";
-                    return View(model);
+                    throw;
                 }
 
+
+                try
+                {
+                    foreach (var role in Roles.GetRolesForUser(model.UserName))
+                    {
+                        Roles.RemoveUserFromRole(model.UserName, role);
+                    }
+                    Roles.AddUserToRoles(model.UserName, roles);
+                }
+                catch (Exception)
+                { }
+                ViewBag.StartupScript = "create_success();";
+                return View(model);
             }
             else
             {

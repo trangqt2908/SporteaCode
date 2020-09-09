@@ -14,12 +14,12 @@ using WEB.Models;
 namespace WEB.Areas.Admin.Controllers
 {
     [AdminAuthorize]
-    public class ClubController : BaseController
+    public class MatchController : BaseController
     {
         private WebContext db = new WebContext();
 
         //
-        // GET: /Admin/Club/
+        // GET: /Admin/Match/
 
         public ActionResult Index()
         {
@@ -27,58 +27,46 @@ namespace WEB.Areas.Admin.Controllers
             return View();
         }
 
-        public ActionResult Club_Read([DataSourceRequest] DataSourceRequest request)
+        public ActionResult Match_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var contents = db.Clubs.Select(x => new ClubDto
-            {
-                ID = x.ID,
-                ClubName = x.ClubName,
-                CreatedDate = x.CreatedDate,
-                Amount = x.Amount,
-                Type = x.Type
-            }).ToList();
+            var contents = (from m in db.Matchs
+                            join u1 in db.UserProfiles on m.Player1 equals u1.UserId
+                            join u2 in db.UserProfiles on m.Player2 equals u2.UserId
+                           select new MatchDto
+                           {
+                               ID = m.ID,
+                               Date = m.Date,
+                               Point = m.Point,
+                               NamePlayer1 = u1.FullName,
+                               NamePlayer2 = u2.FullName,
+                               Player1Score = m.Player1Score,
+                               Player2Score = m.Player2Score,
+                           });
 
-            foreach (var item in contents)
-            {
-                if (item.Type == (int)SportType.Tennis)
-                {
-                    item.TypeName = SportType.Tennis.ToString();
-                }
-                else
-                {
-                    item.TypeName = SportType.Badminton.ToString();
-                }
-            }
             return Json(contents.ToDataSourceResult(request));
         }
 
-        public JsonResult GetClubs()
-        {
-            var Clubs = db.Clubs.Select(x => new { x.ID, x.ClubName }).ToList();
-            return Json(Clubs, JsonRequestBehavior.AllowGet);
-        }
-
         //
-        // GET: /Admin/Club/Create
+        // GET: /Admin/Match/Create
 
         public ActionResult Add()
         {
-            var model = new Club();
+            var model = new Match();
 
             return View(model);
         }
 
-        // POST: /Admin/Club/Create
+        // POST: /Admin/Match/Create
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Add(Club model)
+        public ActionResult Add(Match model)
         {
             if (ModelState.IsValid)
             {
-                model.CreatedDate = DateTime.Now;
-                db.Clubs.Add(model);
+                model.Date = DateTime.Now;
+                db.Matchs.Add(model);
                 db.SaveChanges();
                 ViewBag.StartupScript = "create_success();";
                 return View(model);
@@ -87,11 +75,11 @@ namespace WEB.Areas.Admin.Controllers
         }
 
         //
-        // GET: /Admin/Club/Edit/5
+        // GET: /Admin/Match/Edit/5
 
         public ActionResult Edit(int id = 0)
         {
-            Club model = db.Clubs.Find(id);
+            Match model = db.Matchs.Find(id);
             if (model == null)
             {
                 return HttpNotFound();
@@ -100,32 +88,29 @@ namespace WEB.Areas.Admin.Controllers
         }
 
         //
-        // POST: /Admin/Club/Edit/5
+        // POST: /Admin/Match/Edit/5
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Edit(Club input)
+        public ActionResult Edit(Match input)
         {
-            if (ModelState.IsValid)
-            {
-                var model = db.Clubs.Find(input.ID);
-                model.ClubName = input.ClubName;
-                model.Amount = input.Amount;
-                model.Type = input.Type;
-                model.QRCode = input.QRCode;
-                model.ShareLink = input.ShareLink;
-                model.FacebookRef = input.FacebookRef;
+            var model = db.Matchs.Find(input.ID);
+            model.Date = input.Date;
+            model.Point = input.Point;
+            model.Image = input.Image;
+            model.Player1 = input.Player1;
+            model.Player2 = input.Player2;
+            model.Player1Score = input.Player1Score;
+            model.Player2Score = input.Player2Score;
 
-                db.SaveChanges();
-                ViewBag.StartupScript = "edit_success();";
-                return View(model);
-            }
-            return View(input);
+            db.SaveChanges();
+            ViewBag.StartupScript = "edit_success();";
+            return View(model);
         }
         public ActionResult Delete(int id)
         {
-            var role = db.Set<Club>().Find(id);
+            var role = db.Set<Match>().Find(id);
             if (role == null)
             {
                 return HttpNotFound();
@@ -135,14 +120,14 @@ namespace WEB.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(Club model)
+        public ActionResult Delete(Match model)
         {
 
             try
             {
 
-                var role = db.Clubs.Attach(model);
-                db.Set<Club>().Remove(role);
+                var role = db.Matchs.Attach(model);
+                db.Set<Match>().Remove(role);
                 db.SaveChanges();
                 ViewBag.StartupScript = "delete_success();";
                 return View();
@@ -170,7 +155,7 @@ namespace WEB.Areas.Admin.Controllers
                 { }
             }
 
-            var temp = from p in db.Set<Club>()
+            var temp = from p in db.Set<Match>()
                        where lstSiteID.Contains(p.ID)
                        select p;
 
@@ -179,9 +164,9 @@ namespace WEB.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Deletes(List<Club> model)
+        public ActionResult Deletes(List<Match> model)
         {
-            var temp = new List<Club>();
+            var temp = new List<Match>();
             foreach (var item in model)
             {
                 try

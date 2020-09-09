@@ -14,15 +14,33 @@ namespace WebModels
         public string Text { get; set; }
         public int? Value { get; set; }
     }
+    public class PlayerDto
+    {
+        public int UserId { get; set; }
+        public string FullName { get; set; }
+    }
+    public class MatchDto
+    {
+        public int ID { get; set; }
+        public DateTime? Date { get; set; } 
+        public int? Point { get; set; }
+        public string Image { get; set; }
+        public int? Player1 { get; set; }
+        public int? Player2 { get; set; }
+        public int? Player1Score { get; set; }
+        public int? Player2Score { get; set; }
+        public string NamePlayer1 { get; set; }
+        public string NamePlayer2 { get; set; }
+    }
 
     public class ClubDto
     {
         public int ID { get; set; }
         public string ClubName { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public decimal? Amount { get; set; }
+        public double? Amount { get; set; }
         public int? Type { get; set; }
-        public bool? QRCode { get; set; }
+        public string QRCode { get; set; }
         public string ShareLink { get; set; }
         public string FacebookRef { get; set; }
         public string TypeName { get; set; }
