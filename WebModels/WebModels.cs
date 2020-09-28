@@ -288,12 +288,15 @@ namespace WebModels
     public class Club : BaseEntity
     {
         public string ClubName { get; set; }
-        public DateTime? CreatedDate { get; set; }
         public double? Amount { get; set; }
         public int? Type { get; set; }
         public string QRCode { get; set; }
         public string ShareLink { get; set; }
         public string FacebookRef { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public int ModifiedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
     }
 
     [Table("ClubConfiguration")]
@@ -344,7 +347,7 @@ namespace WebModels
     {
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? Date { get; set; }
-        public int? Point { get; set; }
+        public double? Point { get; set; }
         public string Image { get; set; }
         public int? Player1 { get; set; }
         public int? Player2 { get; set; }

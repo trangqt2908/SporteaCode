@@ -60,7 +60,7 @@ namespace WebModels
         public string SocialNetworkId { get; set; }
         public int? IsActive { get; set; }
         public string AccountType { get; set; }
-        public int? Point { get; set; }
+        public double? Point { get; set; }
         public int? WinMatch { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }

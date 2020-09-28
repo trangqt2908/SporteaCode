@@ -41,7 +41,6 @@ namespace WEB.Areas.Admin.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, string returnUrl)
         {
             

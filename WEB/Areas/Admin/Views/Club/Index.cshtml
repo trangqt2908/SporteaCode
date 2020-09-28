@@ -35,6 +35,7 @@
                                 columns.Bound(p => p.ClubName).Title(Resources.Common.Title);
                                 columns.Bound(p => p.Amount).Title("Tổng quỹ");
                                 columns.Bound(p => p.CreatedDate).Title("Ngày tạo").Format("{0:dd/MM/yyyy}");
+                                columns.Bound(p => p.CreatedBy).Title("Người tạo(Chủ CLB)");
                                 columns.Bound(p => p.TypeName).Title("Loại CLB").Hidden();
                                 columns.Command(command =>
                                 {
